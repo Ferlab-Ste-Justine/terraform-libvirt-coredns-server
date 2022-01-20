@@ -17,7 +17,7 @@ locals {
     network_id = null
     macvtap = macvtap_interface.interface
     addresses = null
-    mac = macvtap_interface.interface.mac
+    mac = macvtap_interface.mac
     hostname = null
   }]
 }
