@@ -1,7 +1,9 @@
 .:53 {
     #Because some distros have a localhost dns setup, we need to be picky on the interface we
     #listen to. we can't just use 0.0.0.0, it will fail.
+%{ for bind_address in bind_addresses ~}
     bind ${bind_address}
+%{ endfor ~}
     auto {
         directory /opt/coredns/zonefiles (.*) {1}
         reload ${reload_interval}
@@ -12,8 +14,8 @@
     reload 5s
     loop
     nsid ${hostname}
-    prometheus ${bind_address}:9153
-    health ${bind_address}:8080
+    prometheus 0.0.0.0:9153
+    health 0.0.0.0:8080
     errors
     log
 }
