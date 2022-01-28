@@ -65,6 +65,7 @@ variable "ssh_admin_user" {
 variable "admin_user_password" { 
   description = "Optional password for admin user"
   type        = string
+  sensitive   = true
   default     = ""
 }
 
@@ -75,43 +76,44 @@ variable "ssh_admin_public_key" {
 
 variable "etcd_ca_certificate" {
   description = "Tls ca certificate that will be used to validate the authenticity of the backend's server certificate"
-  type = string
+  type        = string
 }
 
 variable "etcd_client_certificate" {
   description = "Tls client certificate to connect to the etcd backend"
-  type = string
+  type        = string
 }
 
 variable "etcd_client_key" {
   description = "Tls client key to connect to the etcd backend"
-  type = string
+  type        = string
+  sensitive   = true
 }
 
 variable "etcd_key_prefix" {
   description = "Key prefix to use to identify the dns zonefiles in etcd"
-  type = string
+  type        = string
 }
 
 variable "etcd_endpoints" {
   description = "Endpoints of the etcd servers, taking the <ip>:<port> format"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "coredns_version" {
   description = "Version of coredns to use"
-  type = string
-  default = "1.8.6"
+  type        = string
+  default     = "1.8.6"
 }
 
 variable "zonefiles_reload_interval" {
   description = "Interval of time the coredns auto module waits to check for zonefiles refresh"
-  type = string
-  default = "3s"
+  type        = string
+  default     = "3s"
 }
 
 variable "load_balance_records" {
   description = "Whether to randomize the order of A and AAAA records in the answer"
-  type = bool
-  default = true
+  type        = bool
+  default     = true
 }
