@@ -100,12 +100,6 @@ variable "etcd_endpoints" {
   type        = list(string)
 }
 
-variable "coredns_version" {
-  description = "Version of coredns to use"
-  type        = string
-  default     = "1.8.6"
-}
-
 variable "zonefiles_reload_interval" {
   description = "Interval of time the coredns auto module waits to check for zonefiles refresh"
   type        = string
@@ -116,4 +110,10 @@ variable "load_balance_records" {
   description = "Whether to randomize the order of A and AAAA records in the answer"
   type        = bool
   default     = true
+}
+
+variables "alternate_dns_servers" {
+  description = "Dns servers to use to answer all queries that are not covered by the zonefiles."
+  type        = list(string)
+  default     = []
 }

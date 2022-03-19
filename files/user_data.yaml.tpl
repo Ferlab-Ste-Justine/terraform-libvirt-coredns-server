@@ -113,6 +113,7 @@ write_files:
       WantedBy=multi-user.target
 packages:
   - curl
+  - unzip
 runcmd:
   #Setup coredns auto updater service
   - curl -L https://github.com/Ferlab-Ste-Justine/coredns-auto-updater/releases/download/v0.1.0/coredns-auto-updater_0.1.0_linux_amd64.tar.gz -o /tmp/coredns-auto-updater_0.1.0_linux_amd64.tar.gz
@@ -125,9 +126,11 @@ runcmd:
   - systemctl enable coredns-auto-updater
   - systemctl start coredns-auto-updater
   #Setup coredns service
-  - curl -L https://github.com/coredns/coredns/releases/download/v${coredns_version}/coredns_${coredns_version}_linux_amd64.tgz -o /tmp/coredns_${coredns_version}_linux_amd64.tgz
-  - tar xzvf /tmp/coredns_${coredns_version}_linux_amd64.tgz -C /usr/local/bin
-  - rm -f /tmp/coredns_${coredns_version}_linux_amd64.tgz
+  - curl -L https://github.com/Ferlab-Ste-Justine/ferlab-coredns/releases/download/v1.0.0/linux-amd64.zip --output linux-amd64.zip
+  - unzip linux-amd64.zip
+  - cp linux-amd64/coredns /usr/local/bin/
+  - rm linux-amd64.zip
+  - rm -r linux-amd64
   - systemctl enable coredns
   - systemctl start coredns
   #Install prometheus node exporter as a binary managed as a systemd service
