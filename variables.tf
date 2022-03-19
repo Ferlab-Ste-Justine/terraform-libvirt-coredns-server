@@ -112,7 +112,7 @@ variable "load_balance_records" {
   default     = true
 }
 
-variables "alternate_dns_servers" {
+variable "alternate_dns_servers" {
   description = "Dns servers to use to answer all queries that are not covered by the zonefiles."
   type        = list(string)
   default     = []
