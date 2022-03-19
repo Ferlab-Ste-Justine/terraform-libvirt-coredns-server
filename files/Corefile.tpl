@@ -9,7 +9,7 @@
         reload ${reload_interval}
     }
 %{ if length(alternate_dns_servers) > 0 ~}
-    alternate original SERVFAIL,NXDOMAIN . ${join(" ", [for server in alternate_dns_servers: "${server}:53"])}
+    alternate original SERVFAIL . ${join(" ", [for server in alternate_dns_servers: "${server}:53"])}
 %{ endif ~}
 %{ if load_balance_records ~}
     loadbalance round_robin
