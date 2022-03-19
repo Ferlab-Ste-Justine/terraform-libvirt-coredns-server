@@ -37,6 +37,7 @@ data "template_cloudinit_config" "user_data" {
             bind_addresses = local.bind_addresses
             reload_interval = var.zonefiles_reload_interval
             load_balance_records = var.load_balance_records
+            alternate_dns_servers = var.alternate_dns_servers
           }
         )
         etcd_ca_certificate = var.etcd_ca_certificate
@@ -47,7 +48,6 @@ data "template_cloudinit_config" "user_data" {
         ssh_admin_user = var.ssh_admin_user
         admin_user_password = var.admin_user_password
         ssh_admin_public_key = var.ssh_admin_public_key
-        coredns_version = var.coredns_version
       }
     )
   }

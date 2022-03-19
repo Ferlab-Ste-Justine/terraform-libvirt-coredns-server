@@ -59,9 +59,9 @@ The module supports libvirt networks and macvtap (bridge mode).
 - **etcd_client_key**: Tls client key for the etcd user the server will authentify as
 - **etcd_key_prefix**: Prefix for all the domain keys. The server will look for keys with this prefix and will remove this prefix from the key's name to get the domain.
 - **etcd_endpoints**: A list of endpoints for the etcd servers, each entry taking the ```<ip>:<port>``` format
-- **coredns_version**: Version of coredns to download and run. Defaults to **1.8.6**.
 - **zonefiles_reload_interval**: Time interval at which the **auto** plugin should poll the zonefiles for updates. Defaults to **3s** (ie, 3 seconds).
 - **load_balance_records**: In the event that an A or AAAA record yields several ips, whether to randomize the returned order or not (with clients that only take the first ip, you can achieve some dns-level load balancing this way). Defaults to **true**.
+- **alternate_dns_servers**: List of dns servers to use to answer all queries that are not covered by the zonefiles. It defaults to an empty list.
 
 ## Example
 
@@ -102,6 +102,7 @@ module "coredns" {
   etcd_client_key = local.etcd_coredns_key
   etcd_key_prefix = "/coredns/"
   etcd_endpoints = [for server in local.etcd.servers: "${server.ip}:2379"]
+  alternate_dns_servers = ["8.8.8.8"]
 }
 ```
 
