@@ -41,7 +41,14 @@ variable "mac" {
 
 variable "macvtap_interfaces" {
   description = "List of macvtap interfaces. Mutually exclusive with the network_id, ip and mac fields. Each entry has the following keys: interface, prefix_length, ip, mac, gateway and dns_servers"
-  type        = list(any)
+  type        = list(object({
+    interface = string,
+    prefix_length = number,
+    ip = string,
+    mac = string,
+    gateway = string,
+    dns_servers = list(string),
+  }))
   default = []
 }
 
