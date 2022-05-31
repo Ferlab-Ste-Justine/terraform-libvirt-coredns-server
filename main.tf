@@ -1,6 +1,6 @@
 locals {
   cloud_init_volume_name = var.cloud_init_volume_name == "" ? "${var.name}-cloud-init.iso" : var.cloud_init_volume_name
-  bind_addresses = length(var.macvtap_interfaces) == 0 ? [var.ip] : [for macvtap_interface in var.macvtap_interfaces: macvtap_interface.ip]
+  bind_addresses = length(var.macvtap_interfaces) == 0 ? [var.libvirt_network.ip] : [for macvtap_interface in var.macvtap_interfaces: macvtap_interface.ip]
   network_config = templatefile(
     "${path.module}/files/network_config.yaml.tpl", 
     {
@@ -8,10 +8,10 @@ locals {
     }
   )
   network_interfaces = length(var.macvtap_interfaces) == 0 ? [{
-    network_id = var.network_id
+    network_id = var.libvirt_network.network_id
     macvtap = null
-    addresses = [var.ip]
-    mac = var.mac != "" ? var.mac : null
+    addresses = [var.libvirt_network.ip]
+    mac = var.libvirt_network.mac != "" ? var.libvirt_network.mac : null
     hostname = var.name
   }] : [for macvtap_interface in var.macvtap_interfaces: {
     network_id = null
