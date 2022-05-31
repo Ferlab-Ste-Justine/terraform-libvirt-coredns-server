@@ -76,46 +76,31 @@ variable "ssh_admin_public_key" {
   type        = string
 }
 
-variable "etcd_ca_certificate" {
-  description = "Tls ca certificate that will be used to validate the authenticity of the backend's server certificate"
-  type        = string
+variable "etcd" {
+  description = "Parameters for the etcd backend"
+  type        = object({
+    key_prefix = string
+    endpoints = list(string)
+    ca_certificate = string
+    client = object({
+      certificate = string
+      key = string
+      username = string
+      password = string
+    })
+  })
 }
 
-variable "etcd_client_certificate" {
-  description = "Tls client certificate to connect to the etcd backend"
-  type        = string
-}
-
-variable "etcd_client_key" {
-  description = "Tls client key to connect to the etcd backend"
-  type        = string
-  sensitive   = true
-}
-
-variable "etcd_key_prefix" {
-  description = "Key prefix to use to identify the dns zonefiles in etcd"
-  type        = string
-}
-
-variable "etcd_endpoints" {
-  description = "Endpoints of the etcd servers, taking the <ip>:<port> format"
-  type        = list(string)
-}
-
-variable "zonefiles_reload_interval" {
-  description = "Interval of time the coredns auto module waits to check for zonefiles refresh"
-  type        = string
-  default     = "3s"
-}
-
-variable "load_balance_records" {
-  description = "Whether to randomize the order of A and AAAA records in the answer"
-  type        = bool
-  default     = true
-}
-
-variable "alternate_dns_servers" {
-  description = "Dns servers to use to answer all queries that are not covered by the zonefiles."
-  type        = list(string)
-  default     = []
+variable "dns" {
+  description = "Parameters for the etcd backend"
+  type        = object({
+    zonefiles_reload_interval = string
+    load_balance_records = bool
+    alternate_dns_servers = list(string)
+  })
+  default = {
+    zonefiles_reload_interval = "3s"
+    load_balance_records = true
+    alternate_dns_servers = []
+  }
 }

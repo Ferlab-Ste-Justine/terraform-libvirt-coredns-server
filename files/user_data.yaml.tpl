@@ -70,6 +70,7 @@ write_files:
     permissions: "0444"
     content: |
       ${indent(6, etcd_ca_certificate)}
+%{ if etcd_client_username == "" ~}
   - path: /opt/etcd/client.crt
     owner: root:root
     permissions: "0444"
@@ -80,6 +81,7 @@ write_files:
     permissions: "0440"
     content: |
       ${indent(6, etcd_client_key)}
+%{ endif ~}
   #Coredns auto updater systemd configuration
   - path: /etc/systemd/system/coredns-auto-updater.service
     owner: root:root
@@ -98,8 +100,13 @@ write_files:
       Environment=ZONEFILE_PATH=/opt/coredns/zonefiles
       Environment=ETCD_ENDPOINTS=${join(",", etcd_endpoints)}
       Environment=CA_CERT_PATH=/opt/etcd/ca.crt
+%{ if etcd_client_username == "" ~}
       Environment=USER_CERT_PATH=/opt/etcd/client.crt
       Environment=USER_KEY_PATH=/opt/etcd/client.key
+%{ else ~}
+      Environment=USER_NAME=${etcd_client_username}
+      Environment=USER_PASSWORD=${etcd_client_password}
+%{ endif ~}
       Environment=ETCD_KEY_PREFIX=${etcd_key_prefix}
       User=root
       Group=root

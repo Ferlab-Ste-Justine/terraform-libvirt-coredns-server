@@ -35,16 +35,18 @@ data "template_cloudinit_config" "user_data" {
           {
             hostname = var.name
             bind_addresses = local.bind_addresses
-            reload_interval = var.zonefiles_reload_interval
-            load_balance_records = var.load_balance_records
-            alternate_dns_servers = var.alternate_dns_servers
+            reload_interval = var.dns.zonefiles_reload_interval
+            load_balance_records = var.dns.load_balance_records
+            alternate_dns_servers = var.dns.alternate_dns_servers
           }
         )
-        etcd_ca_certificate = var.etcd_ca_certificate
-        etcd_client_certificate = var.etcd_client_certificate
-        etcd_client_key = var.etcd_client_key
-        etcd_endpoints = var.etcd_endpoints
-        etcd_key_prefix = var.etcd_key_prefix
+        etcd_ca_certificate = var.etcd.ca_certificate
+        etcd_client_certificate = var.etcd.client.certificate
+        etcd_client_key = var.etcd.client.key
+        etcd_client_username = var.etcd.client.username
+        etcd_client_password = var.etcd.client.password
+        etcd_endpoints = var.etcd.endpoints
+        etcd_key_prefix = var.etcd.key_prefix
         ssh_admin_user = var.ssh_admin_user
         admin_user_password = var.admin_user_password
         ssh_admin_public_key = var.ssh_admin_public_key
