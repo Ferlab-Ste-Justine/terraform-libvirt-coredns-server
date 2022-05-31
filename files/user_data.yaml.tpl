@@ -123,12 +123,12 @@ packages:
   - unzip
 runcmd:
   #Setup coredns auto updater service
-  - curl -L https://github.com/Ferlab-Ste-Justine/coredns-auto-updater/releases/download/v0.1.0/coredns-auto-updater_0.1.0_linux_amd64.tar.gz -o /tmp/coredns-auto-updater_0.1.0_linux_amd64.tar.gz
+  - curl -L https://github.com/Ferlab-Ste-Justine/coredns-auto-updater/releases/download/v0.2.0/coredns-auto-updater_0.2.0_linux_amd64.tar.gz -o /tmp/coredns-auto-updater_0.2.0_linux_amd64.tar.gz
   - mkdir -p /tmp/coredns-auto-updater
-  - tar zxvf /tmp/coredns-auto-updater_0.1.0_linux_amd64.tar.gz -C /tmp/coredns-auto-updater
+  - tar zxvf /tmp/coredns-auto-updater_0.2.0_linux_amd64.tar.gz -C /tmp/coredns-auto-updater
   - cp /tmp/coredns-auto-updater/coredns-auto-updater /usr/local/bin/coredns-auto-updater
   - rm -rf /tmp/coredns-auto-updater
-  - rm -f /tmp/coredns-auto-updater_0.1.0_linux_amd64.tar.gz
+  - rm -f /tmp/coredns-auto-updater_0.2.0_linux_amd64.tar.gz
   - mkdir - p /opt/coredns/zonefiles
   - systemctl enable coredns-auto-updater
   - systemctl start coredns-auto-updater
