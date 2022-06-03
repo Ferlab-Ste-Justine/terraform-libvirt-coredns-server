@@ -135,3 +135,44 @@ variable "chrony" {
     }
   }
 }
+
+variable "fluentd" {
+  description = "Fluentd configurations"
+  sensitive   = true
+  type = object({
+    enabled = bool
+    coredns_tag = string
+    coredns_updater_tag = string
+    node_exporter_tag = string
+    syslog_tag = string
+    forward = object({
+      domain = string
+      port = number
+      hostname = string
+      shared_key = string
+      ca_cert = string
+    }),
+    buffer = object({
+      customized = bool
+      custom_value = string
+    })
+  })
+  default = {
+    enabled = false
+    coredns_tag = ""
+    coredns_updater_tag = ""
+    node_exporter_tag = ""
+    syslog_tag = ""
+    forward = {
+      domain = ""
+      port = 0
+      hostname = ""
+      shared_key = ""
+      ca_cert = ""
+    }
+    buffer = {
+      customized = false
+      custom_value = ""
+    }
+  }
+}
