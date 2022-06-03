@@ -144,7 +144,6 @@ variable "fluentd" {
     coredns_tag = string
     coredns_updater_tag = string
     node_exporter_tag = string
-    syslog_tag = string
     forward = object({
       domain = string
       port = number
@@ -162,7 +161,6 @@ variable "fluentd" {
     coredns_tag = ""
     coredns_updater_tag = ""
     node_exporter_tag = ""
-    syslog_tag = ""
     forward = {
       domain = ""
       port = 0
