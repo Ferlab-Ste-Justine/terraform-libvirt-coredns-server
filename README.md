@@ -57,8 +57,8 @@ The module supports libvirt networks and macvtap (bridge mode).
 - **ssh_admin_public_key**: Public part of the ssh key the admin will be able to login as
 - **etcd**: Parameters to connect to the etcd backend. It has the following keys:
   - **ca_certificate**: Tls ca certificate that will be used to validate the authenticity of the etcd cluster
-  - **etcd_key_prefix**: Prefix for all the domain keys. The server will look for keys with this prefix and will remove this prefix from the key's name to get the domain.
-  - **etcd_endpoints**: A list of endpoints for the etcd servers, each entry taking the ```<ip>:<port>``` format
+  - **key_prefix**: Prefix for all the domain keys. The server will look for keys with this prefix and will remove this prefix from the key's name to get the domain.
+  - **endpoints**: A list of endpoints for the etcd servers, each entry taking the ```<ip>:<port>``` format
   - **client**: Authentication parameters for the client (either certificate or username/password authentication are support). It has the following keys:
     - **certificate**: Client certificate if certificate authentication is used.
     - **key**: Client key if certificate authentication is used.
@@ -124,8 +124,8 @@ module "coredns" {
   admin_user_password = local.console_password
   etcd = {
       ca_certificate = local.etcd_ca_cert
-      etcd_key_prefix = "/coredns/"
-      etcd_endpoints = [for server in local.etcd.servers: "${server.ip}:2379"]
+      key_prefix = "/coredns/"
+      endpoints = [for server in local.etcd.servers: "${server.ip}:2379"]
       client = {
           key = local.etcd_coredns_key
           certificate = local.etcd_coredns_cert
