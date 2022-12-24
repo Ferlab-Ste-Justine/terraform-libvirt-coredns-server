@@ -92,7 +92,7 @@ variable "etcd" {
 }
 
 variable "dns" {
-  description = "Parameters for the etcd backend"
+  description = "Parameters for the dns server"
   type        = object({
     zonefiles_reload_interval = string
     load_balance_records = bool
@@ -173,4 +173,10 @@ variable "fluentd" {
       custom_value = ""
     }
   }
+}
+
+variable "install_dependencies" {
+  description = "Whether to install all dependencies in cloud-init"
+  type = bool
+  default = true
 }
