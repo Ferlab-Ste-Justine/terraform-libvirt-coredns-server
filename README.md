@@ -25,7 +25,7 @@ Some of the perceived pros of our implementation:
 
 See the following terraform module that uploads very basic zonefiles in etcd: https://github.com/Ferlab-Ste-Justine/etcd-zonefile
 
-Also, this module expects to authentify against etcd using tls certificate authentication. The following terraform module will, taking a certificate authority as input, generate a valid key and certificate for a given etcd user (disregard the openstack in the name): https://github.com/Ferlab-Ste-Justine/openstack-etcd-client-certificate
+Also, this module expects to authentify against etcd using tls certificate authentication. The following terraform module will, taking a certificate authority as input, generate a valid key and certificate for a given etcd user (disregard the openstack in the name): https://github.com/Ferlab-Ste-Justine/etcd-client-certificate
 
 # Supported Networking
 
@@ -43,7 +43,7 @@ The module supports libvirt networks and macvtap (bridge mode).
   - **ip**: Ip of the vm.
   - **mac**: Mac address of the vm. If none is passed, a random one will be generated.
   - **network_id**: Id (ie, uuid) of the libvirt network to connect to.
-- **macvtap_interfaces**: List of macvtap interfaces to connect the vm to if you opt for macvtap interfaces instead of a libvirt network. Each entry in the list is a map with the following keys:
+- **macvtap_interfaces**: List of macvtap interfaces to connect the vm to if you opt for macvtap interfaces instead of a libvirt network. Each entry in the list is a map with the following keys (note that while the server will bind on all interfaces for dns resolution, the health endpoint and prometheus metrics will only be exposed on the first interface):
   - **interface**: Host network interface that you plan to connect your macvtap interface with.
   - **prefix_length**: Length of the network prefix for the network the interface will be connected to. For a **192.168.1.0/24** for example, this would be 24.
   - **ip**: Ip associated with the macvtap interface. 
@@ -87,6 +87,7 @@ The module supports libvirt networks and macvtap (bridge mode).
   - **buffer**: Configuration for the buffering of outgoing fluentd traffic
     - **customized**: Set to false to use the default buffering configurations. If you wish to customize it, set this to true.
     - **custom_value**: Custom buffering configuration to provide that will override the default one. Should be valid fluentd configuration syntax, including the opening and closing ```<buffer>``` tags.
+- **install_dependencies**: Whether cloud-init should install external dependencies (should be set to false if you already provide an image with the external dependencies built-in).
 
 ## Example
 
