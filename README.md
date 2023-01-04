@@ -42,7 +42,8 @@ The module supports libvirt networks and macvtap (bridge mode).
 - **libvirt_network**: Parameters to connect to a libvirt network if you opt for that instead of macvtap interfaces. In has the following keys:
   - **ip**: Ip of the vm.
   - **mac**: Mac address of the vm. If none is passed, a random one will be generated.
-  - **network_id**: Id (ie, uuid) of the libvirt network to connect to.
+  - **network_id**: Id (ie, uuid) of the libvirt network to connect to (in which case **network_name** should be an empty string).
+  - **network_name**: Name of the libvirt network to connect to (in which case **network_id** should be an empty string).
 - **macvtap_interfaces**: List of macvtap interfaces to connect the vm to if you opt for macvtap interfaces instead of a libvirt network. Each entry in the list is a map with the following keys (note that while the server will bind on all interfaces for dns resolution, the health endpoint and prometheus metrics will only be exposed on the first interface):
   - **interface**: Host network interface that you plan to connect your macvtap interface with.
   - **prefix_length**: Length of the network prefix for the network the interface will be connected to. For a **192.168.1.0/24** for example, this would be 24.
