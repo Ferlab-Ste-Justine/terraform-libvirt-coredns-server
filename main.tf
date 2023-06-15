@@ -25,7 +25,7 @@ locals {
 }
 
 module "network_configs" {
-  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//network?ref=v0.8.0"
+  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//network?ref=v0.10.0"
   network_interfaces = concat(
     [for idx, libvirt_network in var.libvirt_networks: {
       ip = libvirt_network.ip
@@ -46,10 +46,39 @@ module "network_configs" {
   )
 }
 
-module "coredns_configs" {
-  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//coredns?ref=v0.8.0"
+module "coredns_zonefiles_updater_configs" {
+  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//configurations-auto-updater?ref=v0.10.0"
   install_dependencies = var.install_dependencies
-  etcd = var.etcd
+  filesystem = {
+    path = "/opt/coredns/zonefiles"
+    files_permission = "700"
+    directories_permission = "700"
+  }
+  etcd = {
+    key_prefix = var.etcd.key_prefix
+    endpoints = var.etcd.endpoints
+    connection_timeout = "10s"
+    request_timeout = "10s"
+    retry_interval = "500ms"
+    retries = 10
+    auth = {
+      ca_certificate = var.etcd.ca_certificate
+      client_certificate = var.etcd.client.certificate
+      client_key = var.etcd.client.key
+      username = var.etcd.client.username
+      password = var.etcd.client.password
+    }
+  }
+  naming = {
+    binary = "coredns-zonefiles-updater"
+    service = "coredns-zonefiles-updater"
+  }
+  user = "coredns"
+}
+
+module "coredns_configs" {
+  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//coredns?ref=v0.10.0"
+  install_dependencies = var.install_dependencies
   dns = {
     dns_bind_addresses = local.ips
     observability_bind_address = local.ips.0
@@ -61,12 +90,12 @@ module "coredns_configs" {
 }
 
 module "prometheus_node_exporter_configs" {
-  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//prometheus-node-exporter?ref=v0.8.0"
+  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//prometheus-node-exporter?ref=v0.10.0"
   install_dependencies = var.install_dependencies
 }
 
 module "chrony_configs" {
-  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//chrony?ref=v0.8.0"
+  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//chrony?ref=v0.10.0"
   install_dependencies = var.install_dependencies
   chrony = {
     servers  = var.chrony.servers
@@ -76,7 +105,7 @@ module "chrony_configs" {
 }
 
 module "fluentbit_configs" {
-  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//fluent-bit?ref=v0.8.0"
+  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//fluent-bit?ref=v0.10.0"
   install_dependencies = var.install_dependencies
   fluentbit = {
     metrics = var.fluentbit.metrics
@@ -113,6 +142,11 @@ locals {
             admin_user_password = var.admin_user_password
           }
         )
+      },
+      {
+        filename     = "coredns_zonefiles_updater.cfg"
+        content_type = "text/cloud-config"
+        content      = module.coredns_zonefiles_updater_configs.configuration
       },
       {
         filename     = "coredns.cfg"
