@@ -24,13 +24,13 @@ variable "volume_id" {
 variable "libvirt_networks" {
   description = "Parameters of libvirt network connections if a libvirt networks are used."
   type = list(object({
-    network_name = string
-    network_id = string
+    network_name = optional(string, "")
+    network_id = optional(string, "")
     prefix_length = string
     ip = string
     mac = string
-    gateway = string
-    dns_servers = list(string)
+    gateway = optional(string, "")
+    dns_servers = optional(list(string), [])
   }))
   default = []
 }
@@ -38,12 +38,12 @@ variable "libvirt_networks" {
 variable "macvtap_interfaces" {
   description = "List of macvtap interfaces."
   type        = list(object({
-    interface = string,
-    prefix_length = number,
-    ip = string,
-    mac = string,
-    gateway = string,
-    dns_servers = list(string),
+    interface     = string
+    prefix_length = string
+    ip            = string
+    mac           = string
+    gateway       = optional(string, "")
+    dns_servers   = optional(list(string), [])
   }))
   default = []
 }
@@ -84,10 +84,10 @@ variable "etcd" {
     endpoints = list(string)
     ca_certificate = string
     client = object({
-      certificate = string
-      key = string
-      username = string
-      password = string
+      certificate = optional(string, "")
+      key         = optional(string, "")
+      username    = optional(string, "")
+      password    = optional(string, "")
     })
   })
 }
@@ -95,14 +95,45 @@ variable "etcd" {
 variable "dns" {
   description = "Parameters for the dns server"
   type        = object({
-    zonefiles_reload_interval = string
-    load_balance_records = bool
-    alternate_dns_servers = list(string)
+    zonefiles_reload_interval = optional(string, "3s")
+    load_balance_records = optional(bool, true)
+    alternate_dns_servers = optional(list(string), [])
+    forwards = optional(list(object({
+      domain_name = string
+      dns_servers = list(string)
+    })), [])
+    cache = optional(object({
+      domains  = list(string)
+      max_ttl  = optional(number, 86400)  
+      prefetch = optional(object({ 
+        amount   = number    
+        duration = string 
+      }), {
+        amount   = 0                 
+        duration = ""    
+      })
+    }), {
+      domains  = []         
+      max_ttl  = 86400    
+      prefetch = {                    
+        amount   = 0                 
+        duration = ""    
+      }
+    })
   })
   default = {
     zonefiles_reload_interval = "3s"
     load_balance_records = true
     alternate_dns_servers = []
+    forwards = []
+    cache = {
+      domains  = []         
+      max_ttl  = 86400    
+      prefetch = {                    
+        amount   = 0                 
+        duration = ""    
+      }
+    }
   }
 }
 
@@ -145,9 +176,12 @@ variable "fluentbit" {
     coredns_tag = string
     coredns_updater_tag = string
     node_exporter_tag = string
-    metrics = object({
+    metrics = optional(object({
       enabled = bool
       port    = number
+    }), {
+      enabled = false
+      port = 0
     })
     forward = object({
       domain = string
@@ -155,18 +189,6 @@ variable "fluentbit" {
       hostname = string
       shared_key = string
       ca_cert = string
-    })
-    etcd = object({
-      enabled = bool
-      key_prefix = string
-      endpoints = list(string)
-      ca_certificate = string
-      client = object({
-        certificate = string
-        key = string
-        username = string
-        password = string
-      })
     })
   })
   default = {
@@ -185,18 +207,87 @@ variable "fluentbit" {
       shared_key = ""
       ca_cert = ""
     }
-    etcd = {
-      enabled = false
-      key_prefix = ""
-      endpoints = []
+  }
+}
+
+variable "fluentbit_dynamic_config" {
+  description = "Parameters for fluent-bit dynamic config if it is enabled"
+  type = object({
+    enabled = bool
+    source  = string
+    etcd    = optional(object({
+      key_prefix     = string
+      endpoints      = list(string)
+      ca_certificate = string
+      client         = object({
+        certificate = string
+        key         = string
+        username    = string
+        password    = string
+      })
+    }), {
+      key_prefix     = ""
+      endpoints      = []
       ca_certificate = ""
-      client = {
+      client         = {
         certificate = ""
-        key = ""
-        username = ""
-        password = ""
+        key         = ""
+        username    = ""
+        password    = ""
+      }
+      vault_agent_secret_path = ""
+    })
+    git     = optional(object({
+      repo             = string
+      ref              = string
+      path             = string
+      trusted_gpg_keys = list(string)
+      auth             = object({
+        client_ssh_key         = string
+        client_ssh_user        = optional(string, "")
+        server_ssh_fingerprint = string
+      })
+    }), {
+      repo             = ""
+      ref              = ""
+      path             = ""
+      trusted_gpg_keys = []
+      auth             = {
+        client_ssh_key         = ""
+        client_ssh_user        = ""
+        server_ssh_fingerprint = ""
+      }
+    })
+  })
+  default = {
+    enabled = false
+    source = "etcd"
+    etcd = {
+      key_prefix     = ""
+      endpoints      = []
+      ca_certificate = ""
+      client         = {
+        certificate = ""
+        key         = ""
+        username    = ""
+        password    = ""
       }
     }
+    git  = {
+      repo             = ""
+      ref              = ""
+      path             = ""
+      trusted_gpg_keys = []
+      auth             = {
+        client_ssh_key         = ""
+        server_ssh_fingerprint = ""
+      }
+    }
+  }
+
+  validation {
+    condition     = contains(["etcd", "git"], var.fluentbit_dynamic_config.source)
+    error_message = "fluentbit_dynamic_config.source must be 'etcd' or 'git'."
   }
 }
 
